@@ -1,7 +1,6 @@
 """ <-- 3 
 
 Violations:
-
 1. Extraneous Whitespace https://www.python.org/dev/peps/pep-0008/#whitespace-in-expressions-and-statements
 2. Spaces around operators https://www.python.org/dev/peps/pep-0008/#id28
 3. Documentation strings https://www.python.org/dev/peps/pep-0008/#documentation-strings
