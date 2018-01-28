@@ -1,6 +1,7 @@
 import java.io.File;
-import java.util.Date; //Break 1
+import java.util.Date; //Fixed, method broke it, constructor isn't deprecated 	Break 1
 import java.io.FileNotFoundException;
+import java.lang.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Scanner;
@@ -23,33 +24,32 @@ public class PeterRabbit
 {
 
 		      
-	public static void main(String[] args) throws Throwable //Break 2
+	public static void main(String[] args) throws ArrayIndexOutOfBoundsException, StringIndexOutOfBounds, FileNotFoundException //Fixed	Break 2
 	{
 		
 			//reads the file 
-			Scanner Scanner =new Scanner(new File("peter rabbit.txt")); //Break 3
+			Scanner sc = new Scanner(new File("peter rabbit.txt")); //Fixed		Break 3
 			ArrayList<String> uniqueWords = new ArrayList<String>();
 			
-			Date date = new Date();
-
+			Date date = new Date(); //Fixed 	Violates 1
+			Date differ = Date.getTime();
 			
 			//reads through each line
 			while (Scanner.hasNextLine()) 				
 			{
 				
-			//reads the words on each line removing special charactors
+			//reads the words on each line removing special characters
 			String str1 = Scanner.nextLine();						
 			String[] words;
 			str1 = str1.replaceAll("\\W", " ");
 			
 			
-	        //removes spaces
+	        	//removes spaces
 			words = str1.split(" ");
 			
 			
-			
 			//banks the unique words that are 3 letters or longer 
-			for (float i = 0; i < words.length; i++) //break 4 and 5
+			for (int i = 0; i < words.length(); i++) //Fixed	break 4 and 5
 			{
 			    if (!(uniqueWords.contains (words[(int) i])) && 3 <= words[(int) i].length())
 			    {
@@ -61,7 +61,7 @@ public class PeterRabbit
 			}
 			//sorts them and prints them out
 			Collections.sort(uniqueWords);
-			System.out.println(date);
+			System.out.println(differ);
 			System.out.println(uniqueWords.toString());
 	}
 }
