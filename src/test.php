@@ -1,18 +1,39 @@
-<?php//Require statement(s)
-require_once '/var/www/html/BriansProject/vendor/autoload.php';try {//Building the client object
+<?php
+
+require_once '/var/www/html/BriansProject/vendor/autoload.php';
+
+echo "Got to require statement <br> <br>";
+
+session_start();
+
+//try {
+
+echo "Building the client object <br> <br>";
 $client = new Google_Client();
-$client->setApplicationName("My Project 46526");
-$client->setDeveloperKey("AIzaSyDMne0cDndbUKkLKl0WHSFzIpxnJDrVNbc");//Building the service object
-//$service = new Google_Service_Books($client);
-$service = new Google_Service_Webmasters($client);//Calling an API
-//$optParams = array('filter' => 'free-ebooks');
-//$results = $service->volumes->listVolumes('Henry David Thoreau', $optParams);
-//$optParams = array('filter' => 'http');
-$results = $service->sites->list('siteEntry');//Handling the result
-foreach ($results as $item) {
-       echo $item['siteEntry'], "<br /> \n";
-}/*foreach ($results as $item) {
- echo $item['volumeInfo']['title'], "<br /> \n";
-}*/}catch (Exception $e) {
-   die($e->getMessage());
-}?>
+//$client->setApplicationName("My Application");
+//$client->setDeveloperKey("AIzaSyDMne0cDndbUKkLKl0WHSFzIpxnJDrVNbc");
+
+echo "Setting client configuration <br> <br>";
+$client->setAuthConfig('client_secret_151669692220-f0fe5df5ai6kegeu7q5c56tv6g0enlnp.apps.googleusercontent.com.json');
+//$client->setAccessType("offline");
+//$client->setIncludeGranted(true);
+$client->addScope(Google_Service_Webmasters);
+echo "built the client object <br> <br>";
+
+echo "Building the service object <br> <br>";
+
+if (isset($_SESSION['access_token']) && $_SESSION['access_token']) {
+
+	$client->setAccessToken($_SESSION['access_token']);
+	$service = new Google_Service_Webmasters($client);
+
+	echo "built the service object <br> <br>";
+	$results = $service->sites->get('https://thenotaryshop.net/');
+	echo json_encode($results);
+
+} else {
+	$redirect_uri = 'http://' . $_SERVER['HTTP_HOST'] . '/BriansProject/oauth2callback.php';
+	header('Location: ' . filter_var($redirect_uri, FILTER_SANITIZE_URL));
+}
+
+?>

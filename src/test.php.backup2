@@ -1,0 +1,45 @@
+<?php
+
+require_once '/var/www/html/BriansProject/vendor/autoload.php';
+
+echo "got to require statement <br> <br>";
+
+//Building the client object
+$client = new Google_Client();
+$client->setApplicationName("My Application");
+$client->setDeveloperKey("AIzaSyDMne0cDndbUKkLKl0WHSFzIpxnJDrVNbc");
+
+echo "built the client object <br> <br>";
+
+//Building the service object
+//$service = new Google_Service_Books($client);
+$service = new Google_Service_Webmasters($client);
+
+echo "built the service object <br> <br>";
+
+try {
+
+$results = $service->sites->get('https://thenotaryshop.net/');
+
+print_r($results);
+
+echo "tried to retrieve the site";
+
+} catch(Google_Exception $e) {
+	echo $e->getMessage();
+} catch(Google_Service_Exception $e) {
+	echo $e->getMessage();
+}
+
+//} else {
+//echo "Couldn't retrieve website";
+
+//}
+
+//Calling an API
+/*$optParams = array('filter' => 'free-ebooks'); $results = $service->volumes->listVolumes('Henry David Thoreau',
+$optParams); //Handling the result foreach ($results as $item) {
+  echo $item['volumeInfo']['title'], "<br /> \n";
+} */
+
+?>
