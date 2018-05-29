@@ -1,19 +1,28 @@
 <?php
 
-$password = $_POST['password'];
+$servername = "localhost"; //servername for DB, default localhost or 127.0.0.1 or ::1
+$uname = "root"; //username for DB, default root
+$pass = "JamesBondAgent007"; //password for DB
+$dbname = "SEO";
+//Create connection
+$conn = new mysqli($servername, $uname, $pass, $dbname);
+//Check connection
+if ($conn->connect_error) {
+	die("Connection failed: " . $conn->connect_error);
+} else {
+	echo "Connected successfully <br> <br>";
+}
 
-$pw = "Agent007"; //If this was an actual login, this would check the password where $_POST['email'] == databaseEmail that is registered i.e. the hash + the salt would be passed to password_verify.
-//In this case, the database password would already be hashed because the registration would've stored the hash + salt in the DB.
-/*$stmt = $conn->prepare("SELECT * FROM users WHERE email = ? AND password = ?");
-$stmt->bind_param("ss", $email, $password);
-$email = $_POST['email'];
+$username = $_POST['username'];
 $password = $_POST['password'];
+$hash = password_hash($password, PASSWORD_DEFAULT);
+
+$stmt = $conn->prepare("SELECT password FROM Users WHERE username = ? AND password = ?");
+$stmt->bind_param("ss", $username, $password);
 $stmt->execute();
-$result = $stmt->get_result();*/
+$result = $stmt->get_result();
 
-$hash = password_hash($pw, PASSWORD_DEFAULT); //This would happen with actual registration and store this in the DB then use the below function to verify it.
-
-if (password_verify($password, $hash)) { //password should be eventually salted to disallow rainbow table lookups.
+if (password_verify($password, $hash)) {
 
 echo "Your password matches, correct password";
 //Redirect to index.php where the main functions of the application are located.
