@@ -24,6 +24,8 @@ if (isset($_SESSION['access_token']) && $_SESSION['access_token']) {
 	echo "Built the service object <br> <br>";
 
 	$URL = $_POST['URL'];
+	$_SESSION['URL'] = $URL;
+
 	$optParams = array('category' => 'notFound', 'platform' => 'web');
 	$results = $service->urlcrawlerrorscounts->query($URL, $optParams);
 
@@ -363,6 +365,10 @@ $stmt->execute();
 
 $stmt->close();
 $conn->close();
+
+header("Location: http://1328group.com/crawlerrors2.php"); //redirecting to collect the rest of the data.
+//$redirect_url = http://' . $_SERVER['HTTP_HOST'] . '/crawlerrors2.php';
+//header('Location : ' . filter_var($redirect_url, FILTER_SANITIZE_URL));
 
 } else {
 	$redirect_uri = 'http://' . $_SERVER['HTTP_HOST'] . '/oauth2callback.php';
