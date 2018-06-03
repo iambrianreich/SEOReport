@@ -132,6 +132,8 @@ $stmt->close();
 $conn->close();
 
 //$redirect_url = 'http://' . $_SERVER['HTTP_HOST'] . '/index.html';
+$redirect_uri = 'http://' . $_SERVER['HTTP_HOST'] . '/index.html';
+header('Location: ' . filter_var($redirect_uri, FILTER_SANITIZE_URL));
 
 } else {
 	$redirect_uri = 'http://' . $_SERVER['HTTP_HOST'] . '/oauth2callback.php';
