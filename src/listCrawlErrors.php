@@ -23,9 +23,10 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
+$URL = $_POST['URL'];
 
 //$sql = "SELECT * from CrawlError WHERE url = $_POST('URL')";
-$sql = "SELECT id, reportID, url, type, errorCount, created, creator, lastModifiedBy, lastModified, platform from CrawlError";
+$sql = "SELECT id, reportID, url, type, errorCount, created, creator, lastModifiedBy, lastModified, platform from CrawlError WHERE url = '$URL'";
 $result = $conn->query($sql);
 
 if ($result->num_rows > 0) {
@@ -43,5 +44,4 @@ $conn->close();
 
 </body>
 </html>
-
 
