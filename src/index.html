@@ -1,8 +1,14 @@
 <html>
 <body>
 
-<h4> Crawl Errors Data Request </h4>
+<h4> List Crawl Errors Request </h4>
+<p> This will request crawlerror data if exists & display it </p>
+<form action="listCrawlErrors.php" method="post">
+URL: <input type="text" name="URL"><br>
+<input type="submit">
+</form>
 
+<h4> Crawl Errors Data Request </h4>
 <form action="crawlerrors.php" method="post">
 Website URL: <input type="text" name="URL"><br>
 <p> all requests must include a forward / after the URL i.e. http://example.com/ </p>
@@ -10,16 +16,5 @@ Website URL: <input type="text" name="URL"><br>
 <input type="submit">
 </form>
 
-<br>
-
-<h4> TBD </h4>
-
-<form action="register.php" method="post">
-TBA: <input type="text" name="username"><br>
-TBA: <input type="password" name="password"><br>
-<input type="submit">
-</form>
-
 </body>
 </html>
-
