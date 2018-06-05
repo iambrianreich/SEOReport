@@ -1,5 +1,0 @@
-{
-    "name": "root/picard",
-    "require": {
-  "google/apiclient": "^2.0" }
-}
