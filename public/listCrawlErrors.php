@@ -1,3 +1,13 @@
+<?php
+
+/**
+ * Lists crawl errors.
+ */
+
+require_once('../bootstrap.php');
+
+?>
+<!DOCTYPE html>
 <html>
 <head>
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
@@ -11,10 +21,10 @@
 <br>
 
 <?php
-$servername = "localhost";
-$username = "root";
-$password = "JamesBondAgent007";
-$dbname = "SEO";
+$servername     = $config['database']['host'];
+$username       = $config['database']['username'];
+$password       = $config['database']['password'];
+$dbname         = $config['database']['database'];
 
 // Create connection
 $conn = new mysqli($servername, $username, $password, $dbname);
