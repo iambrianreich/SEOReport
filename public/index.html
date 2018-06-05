@@ -1,0 +1,28 @@
+<html>
+<body>
+
+<h4> List Crawl Errors Request </h4>
+<p> This will request crawlerror data if exists & display it </p>
+<form action="listCrawlErrors.php" method="post">
+URL: <input type="text" name="URL"><br>
+<input type="submit">
+</form>
+
+<h4> Crawl Errors Data Request </h4>
+<form action="crawlerrors.php" method="post">
+Website URL: <input type="text" name="URL"><br>
+<p> all requests must include a forward / after the URL i.e. http://example.com/ </p>
+<p> This is a full data request, this might take a while. You might also be redirected to authenticate with google oauth. </p>
+<input type="submit">
+</form>
+
+<h4> Create CSV Request </h4>
+<form action="createCSV.php" method="post">
+Website URL: <input type="text" name="URL"><br>
+<p> This is a request to create a .csv file for a specific website's crawlerrors. </p> 
+<input type="submit">
+</form>
+
+</body>
+</html>
+

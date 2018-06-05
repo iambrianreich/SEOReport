@@ -1,0 +1,24 @@
+{
+    "name": "reichwebconsulting/seo-report",
+    "description": "Proprietary SEO Report",
+    "type": "project",
+    "license": "proprietary",
+    "autoload" : {
+        "psr-4" : {
+            "RWC\\SEOReport\\" : "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Brian Reich",
+            "email": "breich@reich-consulting.net"
+        },
+        {
+            "name" : "Andrew Ostrowsky",
+            "email" : "espryon@protonmail.ch"
+        }
+    ],
+    "require": {
+        "google/apiclient": "^2.0"
+    }
+}
