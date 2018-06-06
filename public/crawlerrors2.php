@@ -1,6 +1,7 @@
 <?php
 
 require_once '../vendor/autoload.php';
+require_once('../bootstrap.php');
 
 echo "Got to require statement <br> <br>";
 
@@ -27,13 +28,14 @@ echo "<br> <br>";
 $URL = $_SESSION['URL'];
 echo "<br> <br>";
 
-$servername = "localhost"; //servername for DB, default localhost or 127.0.0.1 or ::1
-$uname = "root"; //username for DB, default root
-$pass = "JamesBondAgent007"; //password for DB
-$dbname = "SEO";
+$servername = $config['database']['host'];
+$uname = $config['database']['username'];
+$pass = $config['database']['pasword'];
+$dbname = $config['database']['database'];
 
 //Create connection
 $conn = new mysqli($servername, $uname, $pass, $dbname);
+
 //Check connection
 if ($conn->connect_error) {
         die("<br> <br> Connection to database failed: <br> <br>" . $conn->connect_error);

@@ -1,9 +1,11 @@
 <?php
 
-$servername = "localhost"; //servername for DB, default localhost or 127.0.0.1 or ::1
-$uname = "root"; //username for DB, default root
-$pass = "JamesBondAgent007"; //password for DB
-$dbname = "SEO";
+require_once('../bootstrap.php');
+
+$servername = $config['database']['host'];
+$uname = $config['database']['username'];
+$pass = $config['database']['pasword'];
+$dbname = $config['database']['database'];
 
 //Create connection
 $conn = new mysqli($servername, $uname, $pass, $dbname);

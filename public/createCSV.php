@@ -11,22 +11,15 @@
 <br>
 
 <?php
-/*
-$dbConfig = Config::getInstance()->get('db');
-$db = new PDO(
-	'mysql:host=localhost;dbname=SEO', $dbConfig['root'], $dbConfig['JamesBondAgent007']
-);
+require_once('../bootstrap.php');
 
-$db->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+$servername = $config['database']['host'];
+$uname = $config['database']['username'];
+$pass = $config['database']['pasword'];
+$dbname = $config['database']['database'];
 
-$query = 'SELECT id, reportID, url, type, errorCount, created, creator, lastModifiedBy, lastModified, platform from CrawlError';
-$statement = $db->prepare($query);
-$statement->bindValue('id', 'reportID', 'url', 'type', 'errorCount', 'created', 'creator', 'lastModifiedBy', 'lastModified', 'platform');
-$statement->execute();
-$rows = $statement->fetchAll();
-var_dump($rows); */
-
-$con=mysqli_connect("localhost","root","JamesBondAgent007","SEO");
+//Create connection
+$conn = new mysqli($servername, $uname, $pass, $dbname);
 // Check connection
 if (mysqli_connect_errno())
   {
