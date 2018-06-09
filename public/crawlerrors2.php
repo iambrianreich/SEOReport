@@ -1,7 +1,6 @@
 <?php
 
-require_once '../vendor/autoload.php';
-require_once('../bootstrap.php');
+require_once '/var/www/html/BriansProject/vendor/autoload.php';
 
 echo "Got to require statement <br> <br>";
 
@@ -27,15 +26,21 @@ echo $_SESSION['URL']; //test statement.
 echo "<br> <br>";
 $URL = $_SESSION['URL'];
 echo "<br> <br>";
+$lastModifiedBy = $_SESSION['username'];
 
-$servername = $config['database']['host'];
-$uname = $config['database']['username'];
-$pass = $config['database']['pasword'];
-$dbname = $config['database']['database'];
+/*
+$servername = "localhost"; //servername for DB, default localhost or 127.0.0.1 or ::1
+$uname = "root"; //username for DB, default root
+$pass = "JamesBondAgent007"; //password for DB
+$dbname = "SEO"; */
+
+$servername     = $config['database']['host'];
+$uname       = $config['database']['username'];
+$pass       = $config['database']['password'];
+$dbname         = $config['database']['database']; 
 
 //Create connection
 $conn = new mysqli($servername, $uname, $pass, $dbname);
-
 //Check connection
 if ($conn->connect_error) {
         die("<br> <br> Connection to database failed: <br> <br>" . $conn->connect_error);
@@ -68,9 +73,10 @@ echo "<br> <br>";
 
 }
 
-$stmt = $conn->prepare("INSERT INTO CrawlError (url, type, errorCount, lastModified, platform) VALUES (?, ?, ?, ?, ?)");
-$stmt->bind_param("ssiss", $URL, $category, $entry['count'], $entry['timestamp'], $optParams['platform']);
+$stmt = $conn->prepare("INSERT INTO CrawlError (url, type, errorCount, lastModifiedBy, lastModified, platform) VALUES (?, ?, ?, ?, ?, ?)");
+$stmt->bind_param("ssisss", $URL, $category, $entry['count'], $lastModifiedBy, $entry['timestamp'], $optParams['platform']);
 $stmt->execute();
+
 
 $optParams2 = array('category' => 'flashContent', 'platform' => 'smartphoneOnly');
 $results2 = $service->urlcrawlerrorscounts->query($URL, $optParams2);
@@ -97,8 +103,8 @@ echo "<br> <br>";
 
 }
 
-$stmt = $conn->prepare("INSERT INTO CrawlError (url, type, errorCount, lastModified, platform) VALUES (?, ?, ?, ?, ?)");
-$stmt->bind_param("ssiss", $URL, $category, $entry['count'], $entry['timestamp'], $optParams2['platform']);
+$stmt = $conn->prepare("INSERT INTO CrawlError (url, type, errorCount, lastModifiedBy, lastModified, platform) VALUES (?, ?, ?, ?, ?, ?)");
+$stmt->bind_param("ssisss", $URL, $category, $entry['count'], $lastModifiedBy, $entry['timestamp'], $optParams2['platform']);
 $stmt->execute();
 
 $optParams3 = array('category' => 'other', 'platform' => 'smartphoneOnly');
@@ -126,15 +132,15 @@ echo "<br> <br>";
 
 }
 
-$stmt = $conn->prepare("INSERT INTO CrawlError (url, type, errorCount, lastModified, platform) VALUES (?, ?, ?, ?, ?)");
-$stmt->bind_param("ssiss", $URL, $category, $entry['count'], $entry['timestamp'], $optParams3['platform']);
+$stmt = $conn->prepare("INSERT INTO CrawlError (url, type, errorCount, lastModifiedBy, lastModified, platform) VALUES (?, ?, ?, ?, ?, ?)");
+$stmt->bind_param("ssisss", $URL, $category, $entry['count'], $lastModifiedBy, $entry['timestamp'], $optParams3['platform']);
 $stmt->execute();
 
 $stmt->close();
 $conn->close();
 
 //$redirect_url = 'http://' . $_SERVER['HTTP_HOST'] . '/index.html';
-$redirect_uri = 'http://' . $_SERVER['HTTP_HOST'] . '/index.html';
+$redirect_uri = 'http://' . $_SERVER['HTTP_HOST'] . '/index.php';
 header('Location: ' . filter_var($redirect_uri, FILTER_SANITIZE_URL));
 
 } else {

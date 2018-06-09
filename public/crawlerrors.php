@@ -1,7 +1,6 @@
 <?php
 
-require_once('../bootstrap.php');
-$authFile = $config['googleClient']['authFile'];
+require_once '/var/www/html/BriansProject/vendor/autoload.php';
 
 echo "Got to require statement <br> <br>";
 
@@ -11,7 +10,7 @@ echo "Building the client object <br> <br>";
 $client = new Google_Client();
 
 echo "Setting client configuration <br> <br>";
-$client->setAuthConfig($authFile);
+$client->setAuthConfig('client_secret_151669692220-f0fe5df5ai6kegeu7q5c56tv6g0enlnp.apps.googleusercontent.com.json');
 $client->addScope('https://www.googleapis.com/auth/webmasters');
 echo "Built the client object <br> <br>";
 
@@ -19,73 +18,86 @@ echo "Building the service object <br> <br>";
 
 if (isset($_SESSION['access_token']) && $_SESSION['access_token']) {
 
-    $client->setAccessToken($_SESSION['access_token']);
-    $service = new Google_Service_Webmasters($client);
+	$client->setAccessToken($_SESSION['access_token']);
+	$service = new Google_Service_Webmasters($client);
 
-    echo "Built the service object <br> <br>";
+	echo "Built the service object <br> <br>";
 
-    $URL = $_POST['URL'];
-    $_SESSION['URL'] = $URL;
+	$URL = $_POST['URL'];
+	$_SESSION['URL'] = $URL;
 
-    $optParams = array('category' => 'notFound', 'platform' => 'web');
-    $results = $service->urlcrawlerrorscounts->query($URL, $optParams);
+	$optParams = array('category' => 'notFound', 'platform' => 'web');
+	$results = $service->urlcrawlerrorscounts->query($URL, $optParams);
 
-    $json = json_encode($results);
-    $obj = json_decode($json, true);
+	$json = json_encode($results);
+	$obj = json_decode($json, true);
 
-    $servername = $config['database']['host'];
-    $uname = $config['database']['username'];
-    $pass = $config['database']['pasword'];
-    $dbname = $config['database']['database'];
+/*$servername = "localhost"; //servername for DB, default localhost or 127.0.0.1 or ::1
+$uname = "root"; //username for DB, default root
+$pass = "JamesBondAgent007"; //password for DB
+$dbname = "SEO"; */
 
-    //Create connection
-    $conn = new mysqli($servername, $uname, $pass, $dbname);
-    //Check connection
-    if ($conn->connect_error) {
+require_once('../bootstrap.php');
+
+$servername     = $config['database']['host'];
+$uname       = $config['database']['username'];
+$pass       = $config['database']['password'];
+$dbname         = $config['database']['database']; 
+
+//Create connection
+$conn = new mysqli($servername, $uname, $pass, $dbname);
+//Check connection
+if ($conn->connect_error) {
         die("<br> <br> Connection to database failed: <br> <br>" . $conn->connect_error);
-    } else {
+} else {
         echo "<br> <br> Connected successfully to database <br> <br>";
-    }
+}
 
-    if (! isset($obj['countPerTypes'])) {
-        throw new Exception('Expected index "countPerTypes" not found');
-    }
+if (! isset($obj['countPerTypes'])) {
+   	throw new Exception('Expected index "countPerTypes" not found');
+}
 
-        $countPerTypes = $obj['countPerTypes'];
-    foreach ($countPerTypes as $errorType) {
+	$countPerTypes = $obj['countPerTypes'];
+foreach ($countPerTypes as $errorType) {
 
-    if (! isset($errorType['category'])) {
-        throw new Exception('Expected index "category" not found');
-       }    $category = $errorType['category'];
+if (! isset($errorType['category'])) {
+	throw new Exception('Expected index "category" not found');
+   }    $category = $errorType['category'];
 
 
-    }
+}
 
-    if (! isset($errorType['entries'])) {
-           throw new Exception('Expected index "entries" not found');
-       }    $entries = $errorType['entries'];    foreach ($entries as $entry) {
-    }
+if (! isset($errorType['entries'])) {
+       throw new Exception('Expected index "entries" not found');
+   }    $entries = $errorType['entries'];    foreach ($entries as $entry) {
+}
 
-    $stmt = $conn->prepare("INSERT INTO CrawlError (url, type, errorCount, lastModified, platform) VALUES (?, ?, ?, ?, ?)");
-    $stmt->bind_param("ssiss", $URL, $category, $entry['count'], $entry['timestamp'], $optParams['platform']);
-    $stmt->execute();
+$lastModifiedBy = $_SESSION["username"];
+$lastModified = time();
+$stmt = $conn->prepare("INSERT INTO Site(PrimaryUrl, lastModified, lastModifiedBy) VALUES (?, ?, ?)");
+$stmt->bind_param("sis", $URL, $lastModified, $lastModifiedBy);
+$stmt->execute();
 
-    $optParams2 = array('category' => 'notFollowed', 'platform' => 'web');
-    $results2 = $service->urlcrawlerrorscounts->query($URL, $optParams2);
-    $results2 = json_encode($results2);
-    $obj2 = json_decode($results2, true);
+$stmt = $conn->prepare("INSERT INTO CrawlError (url, type, errorCount, lastModifiedBy, lastModified, platform) VALUES (?, ?, ?, ?, ?, ?)");
+$stmt->bind_param("ssisss", $URL, $category, $entry['count'], $lastModifiedBy, $entry['timestamp'], $optParams['platform']);
+$stmt->execute();
 
-    if (! isset($obj2['countPerTypes'])) {
-       throw new Exception('Expected index "countPerTypes" not found');
-    }// This now contains a numerically indexed array.
-    $countPerTypes = $obj2['countPerTypes'];// Iterate it based on array size
-    foreach ($countPerTypes as $errorType) {
-       // Make sure index exists before we inspect it.
-       if (! isset($errorType['category'])) {
-           throw new Exception('Expected index "category" not found');
-       }    $category = $errorType['category'];
-    print_r($category . " Platform: Web");
-    echo "<br> <br>";
+$optParams2 = array('category' => 'notFollowed', 'platform' => 'web');
+$results2 = $service->urlcrawlerrorscounts->query($URL, $optParams2);
+$results2 = json_encode($results2);
+$obj2 = json_decode($results2,yes);
+
+if (! isset($obj2['countPerTypes'])) {
+   throw new Exception('Expected index "countPerTypes" not found');
+}// This now contains a numerically indexed array.
+$countPerTypes = $obj2['countPerTypes'];// Iterate it based on array size
+foreach ($countPerTypes as $errorType) {
+   // Make sure index exists before we inspect it.
+   if (! isset($errorType['category'])) {
+       throw new Exception('Expected index "category" not found');
+   }    $category = $errorType['category'];
+print_r($category . " Platform: Web");
+echo "<br> <br>";
 }
 
    if (! isset($errorType['entries'])) {
@@ -93,8 +105,8 @@ if (isset($_SESSION['access_token']) && $_SESSION['access_token']) {
    }    $entries = $errorType['entries'];    foreach ($entries as $entry) {
 }
 
-$stmt = $conn->prepare("INSERT INTO CrawlError (url, type, errorCount, lastModified, platform) VALUES (?, ?, ?, ?, ?)");
-$stmt->bind_param("ssiss", $URL, $category, $entry['count'], $entry['timestamp'], $optParams2['platform']);
+$stmt = $conn->prepare("INSERT INTO CrawlError (url, type, errorCount, lastModifiedBy, lastModified, platform) VALUES (?, ?, ?, ?, ?, ?)");
+$stmt->bind_param("ssisss", $URL, $category, $entry['count'], $lastModifiedBy, $entry['timestamp'], $optParams2['platform']);
 $stmt->execute();
 
 $optParams3 = array('category' => 'authPermissions', 'platform' => 'web');
@@ -120,8 +132,8 @@ echo "<br> <br>";
 
 }
 
-$stmt = $conn->prepare("INSERT INTO CrawlError (url, type, errorCount, lastModified, platform) VALUES (?, ?, ?, ?, ?)");
-$stmt->bind_param("ssiss", $URL, $category, $entry['count'], $entry['timestamp'], $optParams3['platform']);
+$stmt = $conn->prepare("INSERT INTO CrawlError (url, type, errorCount, lastModifiedBy, lastModified, platform) VALUES (?, ?, ?, ?, ?, ?)");
+$stmt->bind_param("ssisss", $URL, $category, $entry['count'], $lastModifiedBy, $entry['timestamp'], $optParams3['platform']);
 $stmt->execute();
 
 $optParams4 = array('category' => 'serverError', 'platform' => 'web');
@@ -149,8 +161,8 @@ echo "<br> <br>";
 
 }
 
-$stmt = $conn->prepare("INSERT INTO CrawlError (url, type, errorCount, lastModified, platform) VALUES (?, ?, ?, ?, ?)");
-$stmt->bind_param("ssiss", $URL, $category, $entry['count'], $entry['timestamp'], $optParams4['platform']);
+$stmt = $conn->prepare("INSERT INTO CrawlError (url, type, errorCount, lastModifiedBy, lastModified, platform) VALUES (?, ?, ?, ?, ?, ?)");
+$stmt->bind_param("ssisss", $URL, $category, $entry['count'], $lastModifiedBy, $entry['timestamp'], $optParams4['platform']);
 $stmt->execute();
 
 $optParams5 = array('category' => 'soft404', 'platform' => 'web');
@@ -175,8 +187,8 @@ echo "<br> <br>";
    }    $entries = $errorType['entries'];    foreach ($entries as $entry) {
 }
 
-$stmt = $conn->prepare("INSERT INTO CrawlError (url, type, errorCount, lastModified, platform) VALUES (?, ?, ?, ?, ?)");
-$stmt->bind_param("ssiss", $URL, $category, $entry['count'], $entry['timestamp'], $optParams5['platform']);
+$stmt = $conn->prepare("INSERT INTO CrawlError (url, type, errorCount, lastModifiedBy, lastModified, platform) VALUES (?, ?, ?, ?, ?, ?)");
+$stmt->bind_param("ssisss", $URL, $category, $entry['count'], $lastModifiedBy, $entry['timestamp'], $optParams5['platform']);
 $stmt->execute();
 
 $optParams6 = array('category' => 'other', 'platform' => 'web');
@@ -201,8 +213,8 @@ echo "<br> <br>";
    }    $entries = $errorType['entries'];    foreach ($entries as $entry) {
 }
 
-$stmt = $conn->prepare("INSERT INTO CrawlError (url, type, errorCount, lastModified, platform) VALUES (?, ?, ?, ?, ?)");
-$stmt->bind_param("ssiss", $URL, $category, $entry['count'], $entry['timestamp'], $optParams6['platform']);
+$stmt = $conn->prepare("INSERT INTO CrawlError (url, type, errorCount, lastModifiedBy, lastModified, platform) VALUES (?, ?, ?, ?, ?, ?)");
+$stmt->bind_param("ssisss", $URL, $category, $entry['count'], $lastModifiedBy, $entry['timestamp'], $optParams6['platform']);
 $stmt->execute();
 
 $optParams7 = array('category' => 'notFound', 'platform' => 'smartphoneOnly');
@@ -228,8 +240,8 @@ echo "<br> <br>";
    }    $entries = $errorType['entries'];    foreach ($entries as $entry) {
 }
 
-$stmt = $conn->prepare("INSERT INTO CrawlError (url, type, errorCount, lastModified, platform) VALUES (?, ?, ?, ?, ?)");
-$stmt->bind_param("ssiss", $URL, $category, $entry['count'], $entry['timestamp'], $optParams7['platform']);
+$stmt = $conn->prepare("INSERT INTO CrawlError (url, type, errorCount, lastModifiedBy, lastModified, platform) VALUES (?, ?, ?, ?, ?, ?)");
+$stmt->bind_param("ssisss", $URL, $category, $entry['count'], $lastModifiedBy, $entry['timestamp'], $optParams7['platform']);
 $stmt->execute();
 
 $optParams8 = array('category' => 'notFollowed', 'platform' => 'smartphoneOnly');
@@ -255,8 +267,8 @@ echo "<br> <br>";
    }    $entries = $errorType['entries'];    foreach ($entries as $entry) {
 }
 
-$stmt = $conn->prepare("INSERT INTO CrawlError (url, type, errorCount, lastModified, platform) VALUES (?, ?, ?, ?, ?)");
-$stmt->bind_param("ssiss", $URL, $category, $entry['count'], $entry['timestamp'], $optParams8['platform']);
+$stmt = $conn->prepare("INSERT INTO CrawlError (url, type, errorCount, lastModifiedBy, lastModified, platform) VALUES (?, ?, ?, ?, ?, ?)");
+$stmt->bind_param("ssisss", $URL, $category, $entry['count'], $lastModifiedBy, $entry['timestamp'], $optParams8['platform']);
 $stmt->execute();
 
 $optParams9 = array('category' => 'authPermissions', 'platform' => 'smartphoneOnly');
@@ -281,8 +293,8 @@ echo "<br> <br";
    }    $entries = $errorType['entries'];    foreach ($entries as $entry) {
 }
 
-$stmt = $conn->prepare("INSERT INTO CrawlError (url, type, errorCount, lastModified, platform) VALUES (?, ?, ?, ?, ?)");
-$stmt->bind_param("ssiss", $URL, $category, $entry['count'], $entry['timestamp'], $optParams9['platform']);
+$stmt = $conn->prepare("INSERT INTO CrawlError (url, type, errorCount, lastModifiedBy, lastModified, platform) VALUES (?, ?, ?, ?, ?, ?)");
+$stmt->bind_param("ssisss", $URL, $category, $entry['count'], $lastModifiedBy, $entry['timestamp'], $optParams9['platform']);
 $stmt->execute();
 
 $optParams10 = array('category' => 'serverError', 'platform' => 'smartphoneOnly');
@@ -308,8 +320,8 @@ echo "<br> <br";
    }    $entries = $errorType['entries'];    foreach ($entries as $entry) {
 }
 
-$stmt = $conn->prepare("INSERT INTO CrawlError (url, type, errorCount, lastModified, platform) VALUES (?, ?, ?, ?, ?)");
-$stmt->bind_param("ssiss", $URL, $category, $entry['count'], $entry['timestamp'], $optParams10['platform']);
+$stmt = $conn->prepare("INSERT INTO CrawlError (url, type, errorCount, lastModifiedBy, lastModified, platform) VALUES (?, ?, ?, ?, ?, ?)");
+$stmt->bind_param("ssisss", $URL, $category, $entry['count'], $lastModifiedBy, $entry['timestamp'], $optParams10['platform']);
 $stmt->execute();
 
 $optParams11 = array('category' => 'soft404', 'platform' => 'smartphoneOnly');
@@ -334,8 +346,9 @@ echo "<br> <br";
        throw new Exception('Expected index "entries" not found');
    }    $entries = $errorType['entries'];    foreach ($entries as $entry) {
 }
-$stmt = $conn->prepare("INSERT INTO CrawlError (url, type, errorCount, lastModified, platform) VALUES (?, ?, ?, ?, ?)");
-$stmt->bind_param("ssiss", $URL, $category, $entry['count'], $entry['timestamp'], $optParams11['platform']);
+
+$stmt = $conn->prepare("INSERT INTO CrawlError (url, type, errorCount, lastModifiedBy, lastModified, platform) VALUES (?, ?, ?, ?, ?, ?)");
+$stmt->bind_param("ssisss", $URL, $category, $entry['count'], $lastModifiedBy, $entry['timestamp'], $optParams11['platform']);
 $stmt->execute();
 
 $optParams12 = array('category' => 'roboted', 'platform' => 'smartphoneOnly');
@@ -361,8 +374,8 @@ echo "<br> <br";
    }    $entries = $errorType['entries'];    foreach ($entries as $entry) {
 }
 
-$stmt = $conn->prepare("INSERT INTO CrawlError (url, type, errorCount, lastModified, platform) VALUES (?, ?, ?, ?, ?)");
-$stmt->bind_param("ssiss", $URL, $category, $entry['count'], $entry['timestamp'], $optParams12['platform']);
+$stmt = $conn->prepare("INSERT INTO CrawlError (url, type, errorCount, lastModifiedBy, lastModified, platform) VALUES (?, ?, ?, ?, ?, ?)");
+$stmt->bind_param("ssisss", $URL, $category, $entry['count'], $lastModifiedBy, $entry['timestamp'], $optParams12['platform']);
 $stmt->execute();
 
 $stmt->close();
@@ -377,3 +390,5 @@ header('Location: ' . filter_var($redirect_uri, FILTER_SANITIZE_URL));
 	$redirect_uri = 'http://' . $_SERVER['HTTP_HOST'] . '/oauth2callback.php';
 	header('Location: ' . filter_var($redirect_uri, FILTER_SANITIZE_URL));
 }
+
+?>

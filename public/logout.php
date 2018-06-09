@@ -1,3 +1,7 @@
+<?php
+session_start();
+?>
+
 <html>
 <head>
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
@@ -32,38 +36,25 @@ font-size: large;
 <div align="center">
 <img class="img-responsive" src="./images/Reich-Web-Consulting-Logo.png">
 
-<h4> Login </h4>
+<?php
 
-<form action="login.php" method="post">
-Username: <input type="text" name="username"><br>
-Password: <input type="password" name="password"><br>
-<input type="submit">
-</form>
+try {
 
-<br>
+// remove all session variables
+session_unset();
 
-<h4> Register </h4>
+// destroy the session
+session_destroy();
 
-<form action="register.php" method="post">
-Username: <input type="text" name="username"><br>
-Password: <input type="password" name="password"><br>
-<input type="submit">
-</form>
+echo "<br> You've logged out successfully <br>";
 
-<br>
+}
 
-<h4> Change Password </h4>
-<form action="changePassword.php" method="post">
-Username: <input type="text" name="username"><br>
-Old Password: <input type="password" name="passwordOld"><br>
-New Password: <input type="password" name="passwordNew"><br>
-<input type="submit">
-</form>
+catch (Exception $e) {
+	echo 'Message:  ' . $e->getMessage();
+}
 
-<br>
-<br>
-<br>
-<br>
+?>
 
 </body>
 </html>
