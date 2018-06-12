@@ -60,8 +60,10 @@ header('Location: ' . filter_var($redirect_uri, FILTER_SANITIZE_URL));
 <form action="generateReport.php" method="post">
 Filename: <input type="text" name="FileName" value="report.csv"><br>
 <p> Default filename is report.csv </p>
+URL: <input type="text" name="URL"><br>
+<p> Supply a URL if you have not done a Crawl Errors data request. </p>
+<input type="submit">
 </form>
-
 
 <h4> List Crawl Errors Request </h4>
 <p> This will request crawlerror data if exists & display it </p>
@@ -93,3 +95,4 @@ Filename: <input type="text" name="FileName" value="file.csv"><br>
 </div>
 </body>
 </html>
+
